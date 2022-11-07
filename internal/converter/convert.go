@@ -1,3 +1,4 @@
+// Converts SQL query to MongoDB query.
 package converter
 
 import "fmt"

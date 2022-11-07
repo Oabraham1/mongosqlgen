@@ -1,8 +1,8 @@
 package converter
 
 import (
-	"testing"
 	"github.com/stretchr/testify/require"
+	"testing"
 )
 
 func TestParseCommand(t *testing.T) {

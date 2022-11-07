@@ -1,6 +1,5 @@
 SOURCE_FILES?=./...
 GOLANGCI_VERSION=v1.49.0
-COVERAGE=coverage.out
 
 export PATH := ./bin:$(PATH)
 export GO111MODULE := on

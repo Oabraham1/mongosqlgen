@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 #!/bin/sh
-echo "==> Running pre-commit git hook..."
+echo "==> Reformating code"
 gofmt -l -w .

@@ -1,3 +1,4 @@
 #!/usr/bin/env bash
+#!/bin/sh
 echo "==> Running pre-commit git hook..."
 gofmt -l -w .

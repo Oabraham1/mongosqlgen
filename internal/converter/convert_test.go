@@ -11,7 +11,7 @@ func TestConvertSQLCommandToMongoCommand(t *testing.T) {
 	tests := []struct {
 		name    string
 		command sql.SQLCommand
-		want    mongo.MongoCommand
+		want    mongo.Command
 		wantErr bool
 	}{
 		{
@@ -62,7 +62,7 @@ func TestConvertSQLQueryToMongoQuery(t *testing.T) {
 	tests := []struct {
 		name    string
 		sql     sql.SQLQuery
-		want    mongo.MongoQuery
+		want    mongo.Query
 		wantErr bool
 	}{
 		{
@@ -73,7 +73,7 @@ func TestConvertSQLQueryToMongoQuery(t *testing.T) {
 				Table:    "users",
 				Columns:  "name",
 			},
-			want: mongo.MongoQuery{
+			want: mongo.Query{
 				Command:     mongo.MongoFind,
 				Database:    "test",
 				Collections: "users",
@@ -90,7 +90,7 @@ func TestConvertSQLQueryToMongoQuery(t *testing.T) {
 				Columns:  "name",
 				Values:   "John",
 			},
-			want: mongo.MongoQuery{
+			want: mongo.Query{
 				Command:     mongo.MongoInsert,
 				Database:    "test",
 				Collections: "users",
@@ -109,7 +109,7 @@ func TestConvertSQLQueryToMongoQuery(t *testing.T) {
 				Filter:   "id = 1",
 				Values:   "John",
 			},
-			want: mongo.MongoQuery{
+			want: mongo.Query{
 				Command:     mongo.MongoUpdate,
 				Database:    "test",
 				Collections: "users",
@@ -127,7 +127,7 @@ func TestConvertSQLQueryToMongoQuery(t *testing.T) {
 				Table:    "users",
 				Filter:   "id = 1",
 			},
-			want: mongo.MongoQuery{
+			want: mongo.Query{
 				Command:     mongo.MongoDelete,
 				Database:    "test",
 				Collections: "users",
@@ -143,7 +143,7 @@ func TestConvertSQLQueryToMongoQuery(t *testing.T) {
 				Table:    "users",
 				Columns:  "name",
 			},
-			want:    mongo.MongoQuery{},
+			want:    mongo.Query{},
 			wantErr: true,
 		},
 	}

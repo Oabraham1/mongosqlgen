@@ -1,16 +1,16 @@
 package mongo
 
-type MongoCommand string
+type Command string
 
 const (
-	MongoFind   MongoCommand = "find"
-	MongoInsert MongoCommand = "insert"
-	MongoUpdate MongoCommand = "update"
-	MongoDelete MongoCommand = "delete"
+	MongoFind   Command = "find"
+	MongoInsert Command = "insert"
+	MongoUpdate Command = "update"
+	MongoDelete Command = "delete"
 )
 
-type MongoQuery struct {
-	Command     MongoCommand
+type Query struct {
+	Command     Command
 	Database    string
 	Collections string
 	Field       string

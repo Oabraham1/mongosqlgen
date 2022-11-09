@@ -7,7 +7,7 @@ import (
 	"github.com/oabraham1/mongosqlgen/internal/sql"
 )
 
-func ConvertSQLCommandToMongoCommand(command sql.SQLCommand) (mongo.MongoCommand, error) {
+func ConvertSQLCommandToMongoCommand(command sql.SQLCommand) (mongo.Command, error) {
 	switch command {
 	case sql.SQLSelect:
 		return mongo.MongoFind, nil
@@ -22,12 +22,12 @@ func ConvertSQLCommandToMongoCommand(command sql.SQLCommand) (mongo.MongoCommand
 	}
 }
 
-func ConvertSQLQueryToMongoQuery(query sql.SQLQuery) (mongo.MongoQuery, error) {
+func ConvertSQLQueryToMongoQuery(query sql.SQLQuery) (mongo.Query, error) {
 	mongoCommand, err := ConvertSQLCommandToMongoCommand(query.Command)
 	if err != nil {
-		return mongo.MongoQuery{}, err
+		return mongo.Query{}, err
 	}
-	return mongo.MongoQuery{
+	return mongo.Query{
 		Command:     mongoCommand,
 		Database:    query.Database,
 		Collections: query.Table,

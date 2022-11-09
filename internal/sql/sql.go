@@ -1,7 +1,10 @@
 package sql
 
-import "fmt"
-import "github.com/oabraham1/mongosqlgen/internal/parser"
+import (
+	"fmt"
+
+	"github.com/oabraham1/mongosqlgen/internal/parser"
+)
 
 type SQLCommand string
 

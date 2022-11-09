@@ -3,6 +3,7 @@ package converter
 
 import (
 	"fmt"
+
 	"github.com/oabraham1/mongosqlgen/internal/mongo"
 	"github.com/oabraham1/mongosqlgen/internal/sql"
 )

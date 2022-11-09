@@ -126,7 +126,6 @@ func TestHandleSelectUserInput(t *testing.T) {
 			want:    SQLQuery{},
 			wantErr: true,
 		},
-
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -160,7 +159,6 @@ func TestHandleInsertUserInput(t *testing.T) {
 			want:    SQLQuery{},
 			wantErr: true,
 		},
-
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -194,7 +192,6 @@ func TestHandleUpdateUserInput(t *testing.T) {
 			want:    SQLQuery{},
 			wantErr: true,
 		},
-
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -228,7 +225,6 @@ func TestHandleDeleteUserInput(t *testing.T) {
 			want:    SQLQuery{},
 			wantErr: true,
 		},
-
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

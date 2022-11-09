@@ -1,9 +1,9 @@
 package converter
 
 import (
+	"github.com/oabraham1/mongosqlgen/internal/sql"
 	"github.com/stretchr/testify/require"
 	"testing"
-	"github.com/oabraham1/mongosqlgen/internal/sql"
 )
 
 func TestConvertSQLCommandToMongoCommand(t *testing.T) {

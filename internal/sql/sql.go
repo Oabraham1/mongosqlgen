@@ -71,7 +71,6 @@ func GetColumnsAndValuesForUpdate(input string) ([]string, error) {
 	return token, nil
 }
 
-
 func CovertUserInputToSQLQuery(input string) (SQLQuery, error) {
 	command, err := GetCommandFromUserInput(input)
 	if err != nil {
@@ -102,9 +101,9 @@ func HandleSelectUserInput(input string) (SQLQuery, error) {
 		return SQLQuery{}, fmt.Errorf("invalid input: %s", input)
 	}
 	return SQLQuery{
-		Command:  SQLSelect,
-		Table:    tokens[3],
-		Columns:  tokens[1],
+		Command: SQLSelect,
+		Table:   tokens[3],
+		Columns: tokens[1],
 	}, nil
 }
 
@@ -126,10 +125,10 @@ func HandleInsertUserInput(input string) (SQLQuery, error) {
 		return SQLQuery{}, err
 	}
 	return SQLQuery{
-		Command:  SQLInsert,
-		Table:    tokens[2],
-		Columns:  column,
-		Values:   value,
+		Command: SQLInsert,
+		Table:   tokens[2],
+		Columns: column,
+		Values:  value,
 	}, nil
 
 }
@@ -148,11 +147,11 @@ func HandleUpdateUserInput(input string) (SQLQuery, error) {
 		return SQLQuery{}, err
 	}
 	return SQLQuery{
-		Command:  SQLUpdate,
-		Table:    tokens[1],
-		Columns:  colandval[0],
-		Values:   colandval[1],
-		Filter:   tokens[5],
+		Command: SQLUpdate,
+		Table:   tokens[1],
+		Columns: colandval[0],
+		Values:  colandval[1],
+		Filter:  tokens[5],
 	}, nil
 }
 
@@ -166,8 +165,8 @@ func HandleDeleteUserInput(input string) (SQLQuery, error) {
 		return SQLQuery{}, fmt.Errorf("invalid input: %s", input)
 	}
 	return SQLQuery{
-		Command:  SQLDelete,
-		Table:    tokens[2],
-		Filter:   tokens[4],
+		Command: SQLDelete,
+		Table:   tokens[2],
+		Filter:  tokens[4],
 	}, nil
 }

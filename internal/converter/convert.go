@@ -23,7 +23,7 @@ func ConvertSQLCommandToMongoCommand(command sql.Command) (mongo.Command, error)
 	}
 }
 
-func ConvertSQLQueryToMongoQuery(query sql.SQLQuery) (mongo.Query, error) {
+func ConvertSQLQueryToMongoQuery(query sql.Query) (mongo.Query, error) {
 	mongoCommand, err := ConvertSQLCommandToMongoCommand(query.Command)
 	if err != nil {
 		return mongo.Query{}, err

@@ -111,19 +111,19 @@ func TestHandleSelectUserInput(t *testing.T) {
 	tests := []struct {
 		name    string
 		input   string
-		want    SQLQuery
+		want    Query
 		wantErr bool
 	}{
 		{
 			name:    "select all",
 			input:   "SELECT * FROM users",
-			want:    SQLQuery{Command: SQLSelect, Database: "", Table: "users", Columns: "*", Filter: ""},
+			want:    Query{Command: SQLSelect, Database: "", Table: "users", Columns: "*", Filter: ""},
 			wantErr: false,
 		},
 		{
 			name:    "unknown",
 			input:   "UNKNOWN",
-			want:    SQLQuery{},
+			want:    Query{},
 			wantErr: true,
 		},
 	}
@@ -144,19 +144,19 @@ func TestHandleInsertUserInput(t *testing.T) {
 	tests := []struct {
 		name    string
 		input   string
-		want    SQLQuery
+		want    Query
 		wantErr bool
 	}{
 		{
 			name:    "insert",
 			input:   "INSERT INTO users (name) VALUES (Bob)",
-			want:    SQLQuery{Command: SQLInsert, Database: "", Table: "users", Columns: "name", Filter: "", Values: "Bob"},
+			want:    Query{Command: SQLInsert, Database: "", Table: "users", Columns: "name", Filter: "", Values: "Bob"},
 			wantErr: false,
 		},
 		{
 			name:    "unknown",
 			input:   "UNKNOWN",
-			want:    SQLQuery{},
+			want:    Query{},
 			wantErr: true,
 		},
 	}
@@ -177,19 +177,19 @@ func TestHandleUpdateUserInput(t *testing.T) {
 	tests := []struct {
 		name    string
 		input   string
-		want    SQLQuery
+		want    Query
 		wantErr bool
 	}{
 		{
 			name:    "update",
 			input:   "UPDATE users SET name=Bob WHERE name=Alice",
-			want:    SQLQuery{Command: SQLUpdate, Database: "", Table: "users", Columns: "name", Filter: "name=Alice", Values: "Bob"},
+			want:    Query{Command: SQLUpdate, Database: "", Table: "users", Columns: "name", Filter: "name=Alice", Values: "Bob"},
 			wantErr: false,
 		},
 		{
 			name:    "unknown",
 			input:   "UNKNOWN",
-			want:    SQLQuery{},
+			want:    Query{},
 			wantErr: true,
 		},
 	}
@@ -210,19 +210,19 @@ func TestHandleDeleteUserInput(t *testing.T) {
 	tests := []struct {
 		name    string
 		input   string
-		want    SQLQuery
+		want    Query
 		wantErr bool
 	}{
 		{
 			name:    "delete",
 			input:   "DELETE FROM users WHERE name=Bob",
-			want:    SQLQuery{Command: SQLDelete, Database: "", Table: "users", Columns: "", Filter: "name=Bob"},
+			want:    Query{Command: SQLDelete, Database: "", Table: "users", Columns: "", Filter: "name=Bob"},
 			wantErr: false,
 		},
 		{
 			name:    "unknown",
 			input:   "UNKNOWN",
-			want:    SQLQuery{},
+			want:    Query{},
 			wantErr: true,
 		},
 	}

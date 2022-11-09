@@ -15,7 +15,7 @@ const (
 	SQLDelete Command = "DELETE"
 )
 
-type SQLQuery struct {
+type Query struct {
 	Command  Command
 	Database string
 	Table    string
@@ -74,10 +74,10 @@ func GetColumnsAndValuesForUpdate(input string) ([]string, error) {
 	return token, nil
 }
 
-func CovertUserInputToSQLQuery(input string) (SQLQuery, error) {
+func CovertUserInputToSQLQuery(input string) (Query, error) {
 	command, err := GetCommandFromUserInput(input)
 	if err != nil {
-		return SQLQuery{}, err
+		return Query{}, err
 	}
 	if command == SQLSelect {
 		return HandleSelectUserInput(input)
@@ -91,19 +91,19 @@ func CovertUserInputToSQLQuery(input string) (SQLQuery, error) {
 	if command == SQLDelete {
 		return HandleDeleteUserInput(input)
 	}
-	return SQLQuery{}, fmt.Errorf("unknown command: %s", command)
+	return Query{}, fmt.Errorf("unknown command: %s", command)
 }
 
 // Can only select from one table and one column
-func HandleSelectUserInput(input string) (SQLQuery, error) {
+func HandleSelectUserInput(input string) (Query, error) {
 	tokens, err := parser.ParseUserInput(input)
 	if err != nil {
-		return SQLQuery{}, err
+		return Query{}, err
 	}
 	if len(tokens) != 4 {
-		return SQLQuery{}, fmt.Errorf("invalid input: %s", input)
+		return Query{}, fmt.Errorf("invalid input: %s", input)
 	}
-	return SQLQuery{
+	return Query{
 		Command: SQLSelect,
 		Table:   tokens[3],
 		Columns: tokens[1],
@@ -111,23 +111,23 @@ func HandleSelectUserInput(input string) (SQLQuery, error) {
 }
 
 // Handle insert into one column
-func HandleInsertUserInput(input string) (SQLQuery, error) {
+func HandleInsertUserInput(input string) (Query, error) {
 	tokens, err := parser.ParseUserInput(input)
 	if err != nil {
-		return SQLQuery{}, err
+		return Query{}, err
 	}
 	if len(tokens) != 6 {
-		return SQLQuery{}, fmt.Errorf("invalid input: %s", tokens)
+		return Query{}, fmt.Errorf("invalid input: %s", tokens)
 	}
 	column, err := GetColumnsForInsert(tokens[3])
 	if err != nil {
-		return SQLQuery{}, err
+		return Query{}, err
 	}
 	value, err := GetValuesForInsert(tokens[5])
 	if err != nil {
-		return SQLQuery{}, err
+		return Query{}, err
 	}
-	return SQLQuery{
+	return Query{
 		Command: SQLInsert,
 		Table:   tokens[2],
 		Columns: column,
@@ -137,19 +137,19 @@ func HandleInsertUserInput(input string) (SQLQuery, error) {
 }
 
 // Handle update for one column without spaces in column and value
-func HandleUpdateUserInput(input string) (SQLQuery, error) {
+func HandleUpdateUserInput(input string) (Query, error) {
 	tokens, err := parser.ParseUserInput(input)
 	if err != nil {
-		return SQLQuery{}, err
+		return Query{}, err
 	}
 	if len(tokens) != 6 {
-		return SQLQuery{}, fmt.Errorf("invalid input: %s", input)
+		return Query{}, fmt.Errorf("invalid input: %s", input)
 	}
 	colandval, err := GetColumnsAndValuesForUpdate(tokens[3])
 	if err != nil {
-		return SQLQuery{}, err
+		return Query{}, err
 	}
-	return SQLQuery{
+	return Query{
 		Command: SQLUpdate,
 		Table:   tokens[1],
 		Columns: colandval[0],
@@ -159,15 +159,15 @@ func HandleUpdateUserInput(input string) (SQLQuery, error) {
 }
 
 // Handle delete for one column without spaces in column and value
-func HandleDeleteUserInput(input string) (SQLQuery, error) {
+func HandleDeleteUserInput(input string) (Query, error) {
 	tokens, err := parser.ParseUserInput(input)
 	if err != nil {
-		return SQLQuery{}, err
+		return Query{}, err
 	}
 	if len(tokens) != 5 {
-		return SQLQuery{}, fmt.Errorf("invalid input: %s", input)
+		return Query{}, fmt.Errorf("invalid input: %s", input)
 	}
-	return SQLQuery{
+	return Query{
 		Command: SQLDelete,
 		Table:   tokens[2],
 		Filter:  tokens[4],

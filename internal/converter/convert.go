@@ -3,8 +3,8 @@ package converter
 
 import (
 	"fmt"
-	"github.com/oabraham1/mongosqlgen/internal/sql"
 	"github.com/oabraham1/mongosqlgen/internal/mongo"
+	"github.com/oabraham1/mongosqlgen/internal/sql"
 )
 
 func ConvertSQLCommandToMongoCommand(command sql.SQLCommand) (mongo.MongoCommand, error) {

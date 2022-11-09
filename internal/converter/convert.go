@@ -2,37 +2,53 @@
 package converter
 
 import "fmt"
+import "github.com/oabraham1/mongosqlgen/internal/sql"
 
-type SQLCommand string
+type MongoCommand string
 
 const (
-	Select SQLCommand = "SELECT"
-	Insert SQLCommand = "INSERT"
-	Update SQLCommand = "UPDATE"
-	Delete SQLCommand = "DELETE"
+	MongoFind   MongoCommand = "find"
+	MongoInsert MongoCommand = "insert"
+	MongoUpdate MongoCommand = "update"
+	MongoDelete MongoCommand = "delete"
 )
 
-type SQLConverter interface {
-	Convert(command SQLCommand, table string, columns []string, values []interface{}) (string, error)
+type MongoQuery struct {
+	Command     MongoCommand
+	Database    string
+	Collections string
+	Field       string
+	Filter      string
+	Values      interface{}
 }
 
-type SQLConverterFunc func(command SQLCommand, table string, columns []string, values []interface{}) (string, error)
-
-func (f SQLConverterFunc) Convert(command SQLCommand, table string, columns []string, values []interface{}) (string, error) {
-	return f(command, table, columns, values)
-}
-
-func ParseCommand(command string) (SQLCommand, error) {
+func ConvertSQLCommandToMongoCommand(command sql.SQLCommand) (MongoCommand, error) {
 	switch command {
-	case "SELECT":
-		return Select, nil
-	case "INSERT":
-		return Insert, nil
-	case "UPDATE":
-		return Update, nil
-	case "DELETE":
-		return Delete, nil
+	case sql.SQLSelect:
+		return MongoFind, nil
+	case sql.SQLInsert:
+		return MongoInsert, nil
+	case sql.SQLUpdate:
+		return MongoUpdate, nil
+	case sql.SQLDelete:
+		return MongoDelete, nil
 	default:
 		return "", fmt.Errorf("unknown command: %s", command)
 	}
+}
+
+func ConvertSQLQueryToMongoQuery(query sql.SQLQuery) (MongoQuery, error) {
+	mongoCommand, err := ConvertSQLCommandToMongoCommand(query.Command)
+	if err != nil {
+		return MongoQuery{}, err
+	}
+	return MongoQuery{
+		Command:     mongoCommand,
+		Database:    query.Database,
+		Collections: query.Table,
+		Field:       query.Columns,
+		Filter:      query.Filter,
+		Values:      query.Values,
+	}, nil
+
 }

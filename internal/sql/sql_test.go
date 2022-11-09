@@ -9,7 +9,7 @@ func TestParseSQLCommand(t *testing.T) {
 	tests := []struct {
 		name    string
 		command string
-		want    SQLCommand
+		want    Command
 		wantErr bool
 	}{
 		{
@@ -60,7 +60,7 @@ func TestGetCommandFromUserInput(t *testing.T) {
 	tests := []struct {
 		name    string
 		input   string
-		want    SQLCommand
+		want    Command
 		wantErr bool
 	}{
 		{

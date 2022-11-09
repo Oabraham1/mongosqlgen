@@ -10,7 +10,7 @@ import (
 func TestConvertSQLCommandToMongoCommand(t *testing.T) {
 	tests := []struct {
 		name    string
-		command sql.SQLCommand
+		command sql.Command
 		want    mongo.Command
 		wantErr bool
 	}{

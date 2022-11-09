@@ -6,17 +6,17 @@ import (
 	"github.com/oabraham1/mongosqlgen/internal/parser"
 )
 
-type SQLCommand string
+type Command string
 
 const (
-	SQLSelect SQLCommand = "SELECT"
-	SQLInsert SQLCommand = "INSERT"
-	SQLUpdate SQLCommand = "UPDATE"
-	SQLDelete SQLCommand = "DELETE"
+	SQLSelect Command = "SELECT"
+	SQLInsert Command = "INSERT"
+	SQLUpdate Command = "UPDATE"
+	SQLDelete Command = "DELETE"
 )
 
 type SQLQuery struct {
-	Command  SQLCommand
+	Command  Command
 	Database string
 	Table    string
 	Columns  string
@@ -24,7 +24,7 @@ type SQLQuery struct {
 	Values   interface{}
 }
 
-func ParseSQLCommand(command string) (SQLCommand, error) {
+func ParseSQLCommand(command string) (Command, error) {
 	switch command {
 	case "SELECT":
 		return SQLSelect, nil
@@ -39,7 +39,7 @@ func ParseSQLCommand(command string) (SQLCommand, error) {
 	}
 }
 
-func GetCommandFromUserInput(input string) (SQLCommand, error) {
+func GetCommandFromUserInput(input string) (Command, error) {
 	tokens, err := parser.ParseUserInput(input)
 	if err != nil {
 		return "", err

@@ -8,7 +8,7 @@ import (
 	"github.com/oabraham1/mongosqlgen/internal/sql"
 )
 
-func ConvertSQLCommandToMongoCommand(command sql.SQLCommand) (mongo.Command, error) {
+func ConvertSQLCommandToMongoCommand(command sql.Command) (mongo.Command, error) {
 	switch command {
 	case sql.SQLSelect:
 		return mongo.MongoFind, nil

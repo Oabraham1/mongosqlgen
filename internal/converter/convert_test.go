@@ -2,6 +2,7 @@ package converter
 
 import (
 	"github.com/oabraham1/mongosqlgen/internal/sql"
+	"github.com/oabraham1/mongosqlgen/internal/mongo"
 	"github.com/stretchr/testify/require"
 	"testing"
 )
@@ -10,31 +11,31 @@ func TestConvertSQLCommandToMongoCommand(t *testing.T) {
 	tests := []struct {
 		name    string
 		command sql.SQLCommand
-		want    MongoCommand
+		want    mongo.MongoCommand
 		wantErr bool
 	}{
 		{
 			name:    "select",
 			command: sql.SQLSelect,
-			want:    MongoFind,
+			want:    mongo.MongoFind,
 			wantErr: false,
 		},
 		{
 			name:    "insert",
 			command: sql.SQLInsert,
-			want:    MongoInsert,
+			want:    mongo.MongoInsert,
 			wantErr: false,
 		},
 		{
 			name:    "update",
 			command: sql.SQLUpdate,
-			want:    MongoUpdate,
+			want:    mongo.MongoUpdate,
 			wantErr: false,
 		},
 		{
 			name:    "delete",
 			command: sql.SQLDelete,
-			want:    MongoDelete,
+			want:    mongo.MongoDelete,
 			wantErr: false,
 		},
 		{
@@ -61,7 +62,7 @@ func TestConvertSQLQueryToMongoQuery(t *testing.T) {
 	tests := []struct {
 		name    string
 		sql     sql.SQLQuery
-		want    MongoQuery
+		want    mongo.MongoQuery
 		wantErr bool
 	}{
 		{
@@ -72,8 +73,8 @@ func TestConvertSQLQueryToMongoQuery(t *testing.T) {
 				Table:    "users",
 				Columns:  "name",
 			},
-			want: MongoQuery{
-				Command:     MongoFind,
+			want: mongo.MongoQuery{
+				Command:     mongo.MongoFind,
 				Database:    "test",
 				Collections: "users",
 				Field:       "name",
@@ -89,8 +90,8 @@ func TestConvertSQLQueryToMongoQuery(t *testing.T) {
 				Columns:  "name",
 				Values:   "John",
 			},
-			want: MongoQuery{
-				Command:     MongoInsert,
+			want: mongo.MongoQuery{
+				Command:     mongo.MongoInsert,
 				Database:    "test",
 				Collections: "users",
 				Field:       "name",
@@ -108,8 +109,8 @@ func TestConvertSQLQueryToMongoQuery(t *testing.T) {
 				Filter:   "id = 1",
 				Values:   "John",
 			},
-			want: MongoQuery{
-				Command:     MongoUpdate,
+			want: mongo.MongoQuery{
+				Command:     mongo.MongoUpdate,
 				Database:    "test",
 				Collections: "users",
 				Field:       "name",
@@ -126,8 +127,8 @@ func TestConvertSQLQueryToMongoQuery(t *testing.T) {
 				Table:    "users",
 				Filter:   "id = 1",
 			},
-			want: MongoQuery{
-				Command:     MongoDelete,
+			want: mongo.MongoQuery{
+				Command:     mongo.MongoDelete,
 				Database:    "test",
 				Collections: "users",
 				Filter:      "id = 1",
@@ -142,7 +143,7 @@ func TestConvertSQLQueryToMongoQuery(t *testing.T) {
 				Table:    "users",
 				Columns:  "name",
 			},
-			want:    MongoQuery{},
+			want:    mongo.MongoQuery{},
 			wantErr: true,
 		},
 	}

@@ -13,7 +13,7 @@ type Query struct {
 	Command     Command
 	Database    string
 	Collections string
-	Field       string
+	Field       []string
 	Filter      string
-	Values      interface{}
+	Values      []interface{}
 }

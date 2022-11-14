@@ -19,9 +19,9 @@ type Query struct {
 	Command  Command
 	Database string
 	Table    string
-	Columns  string
+	Columns  []string
 	Filter   string
-	Values   interface{}
+	Values   []interface{}
 }
 
 func ParseSQLCommand(command string) (Command, error) {
@@ -47,31 +47,219 @@ func GetCommandFromUserInput(input string) (Command, error) {
 	return ParseSQLCommand(tokens[0])
 }
 
-// GetColumns returns a single columns from a string of the form (col1)
-func GetColumnsForInsert(input string) (string, error) {
-	token, err := parser.SplitInputByDelimiters(input, []string{"(", ")"})
+func HandleSelectUserInput(input string) (Query, error) {
+	var result Query
+
+	result.Command = SQLSelect
+	column, err := parser.FindBetween(input, "SELECT", "FROM")
 	if err != nil {
-		return "", err
+		return Query{}, err
 	}
-	return token[0], nil
+	columns, err := parser.SplitInputByDelimiters(column, []string{" ", ","})
+	if err != nil {
+		return Query{}, err
+	}
+	result.Columns = columns
+
+	has := parser.ContainsCommand(input, "WHERE")
+	if has {
+		tables, err := parser.FindBetween(input, "FROM", "WHERE")
+		if err != nil {
+			return Query{}, err
+		}
+		table, err := parser.SplitInputByDelimiters(tables, []string{" ", ","})
+		if err != nil {
+			return Query{}, err
+		}
+		result.Table = table[0]
+
+		filters, err := parser.FindAfter(input, "WHERE")
+		if err != nil {
+			return Query{}, err
+		}
+		filter, err := parser.SplitInputByDelimiters(filters, []string{" ", ",", "'"})
+		if err != nil {
+			return Query{}, err
+		}
+		for _, f := range filter {
+			result.Filter = result.Filter + f
+		}
+	} else {
+		tables, err := parser.FindAfter(input, "FROM")
+		if err != nil {
+			return Query{}, err
+		}
+		table, err := parser.SplitInputByDelimiters(tables, []string{" ", ","})
+		if err != nil {
+			return Query{}, err
+		}
+		result.Table = table[0]
+		result.Filter = ""
+	}
+	return result, nil
 }
 
-// GetValues returns a single value from a string of the form (val1)
-func GetValuesForInsert(input string) (string, error) {
-	token, err := parser.SplitInputByDelimiters(input, []string{"(", ")"})
-	if err != nil {
-		return "", err
+func HandleInsertUserInput(input string) (Query, error) {
+	var result Query
+	result.Command = SQLInsert
+	if parser.CountOccurences(input, "(") == 1 {
+		temp, err := parser.FindBetween(input, "INTO", "VALUES")
+		if err != nil {
+			return Query{}, err
+		}
+		table, err := parser.SplitInputByDelimiters(temp, []string{" ", ","})
+		if err != nil {
+			return Query{}, err
+		}
+		result.Table = table[0]
+	} else {
+		temp, err := parser.FindBetween(input, "INTO", "(")
+		if err != nil {
+			return Query{}, err
+		}
+		table, err := parser.SplitInputByDelimiters(temp, []string{" ", ","})
+		if err != nil {
+			return Query{}, err
+		}
+		result.Table = table[0]
 	}
-	return token[0], nil
+
+	if parser.CountOccurences(input, "(") == 2 {
+		temp, err := parser.FindBetween(input, "(", ")")
+		if err != nil {
+			return Query{}, err
+		}
+		columns, err := parser.SplitInputByDelimiters(temp, []string{" ", ","})
+		if err != nil {
+			return Query{}, err
+		}
+		result.Columns = columns
+	} else {
+		result.Columns = []string{}
+	}
+
+	temp, err := parser.FindAfter(input, "VALUES")
+	if err != nil {
+		return Query{}, err
+	}
+	values, err := parser.SplitInputByDelimiters(temp, []string{" ", ",", "(", ")", "'"})
+	if err != nil {
+		return Query{}, err
+	}
+	for _, v := range values {
+		result.Values = append(result.Values, v)
+	}
+
+	if len(result.Columns) > 0 {
+		if len(result.Columns) != len(result.Values) {
+			return Query{}, fmt.Errorf("number of columns and values do not match")
+		}
+	}
+	return result, nil
 }
 
-// GetColumns returns a single columns from a string of the form col1=val1 or col1 = val1
-func GetColumnsAndValuesForUpdate(input string) ([]string, error) {
-	token, err := parser.SplitInputByDelimiters(input, []string{"=", " "})
+func HandleUpdateUserInput(input string) (Query, error) {
+	var result Query
+	result.Command = SQLUpdate
+
+	temp, err := parser.FindBetween(input, "UPDATE", "SET")
 	if err != nil {
-		return nil, err
+		return Query{}, err
 	}
-	return token, nil
+	table, err := parser.SplitInputByDelimiters(temp, []string{" ", ","})
+	if err != nil {
+		return Query{}, err
+	}
+	result.Table = table[0]
+
+	if parser.ContainsCommand(input, "WHERE") {
+		temp, err := parser.FindAfter(input, "WHERE")
+		if err != nil {
+			return Query{}, err
+		}
+		line, err := parser.SplitInputByDelimiters(temp, []string{" ", ",", "'"})
+		if err != nil {
+			return Query{}, err
+		}
+		for _, l := range line {
+			result.Filter = result.Filter + l
+		}
+	} else {
+		result.Filter = ""
+	}
+
+	var lines string
+	if parser.ContainsCommand(input, "WHERE") {
+		lines, err = parser.FindBetween(input, "SET", "WHERE")
+		if err != nil {
+			return Query{}, err
+		}
+	} else {
+		lines, err = parser.FindAfter(input, "SET")
+		if err != nil {
+			return Query{}, err
+		}
+	}
+
+	line, err := parser.SplitInputByDelimiters(lines, []string{","})
+	if err != nil {
+		return Query{}, err
+	}
+	for _, l := range line {
+		column, err := parser.SplitInputByDelimiters(l, []string{"=", " ", "'"})
+		if err != nil {
+			return Query{}, err
+		}
+		result.Columns = append(result.Columns, column[0])
+		result.Values = append(result.Values, column[1])
+	}
+	return result, nil
+}
+
+func HandleDeleteUserInput(input string) (Query, error) {
+	var result Query
+
+	if !parser.ContainsCommand(input, "DELETE") {
+		return Query{}, fmt.Errorf("invalid command")
+	}
+	result.Command = SQLDelete
+
+	if parser.ContainsCommand(input, "WHERE") {
+		temp, err := parser.FindBetween(input, "FROM", "WHERE")
+		if err != nil {
+			return Query{}, err
+		}
+		table, err := parser.SplitInputByDelimiters(temp, []string{" ", ","})
+		if err != nil {
+			return Query{}, err
+		}
+		result.Table = table[0]
+
+		temp, err = parser.FindAfter(input, "WHERE")
+		if err != nil {
+			return Query{}, err
+		}
+		line, err := parser.SplitInputByDelimiters(temp, []string{" ", ",", "'"})
+		if err != nil {
+			return Query{}, err
+		}
+		for _, l := range line {
+			result.Filter = result.Filter + l
+		}
+	} else {
+		temp, err := parser.FindAfter(input, "FROM")
+		if err != nil {
+			return Query{}, err
+		}
+		table, err := parser.SplitInputByDelimiters(temp, []string{" ", ","})
+		if err != nil {
+			return Query{}, err
+		}
+		result.Table = table[0]
+		result.Filter = ""
+	}
+
+	return result, nil
 }
 
 func CovertUserInputToSQLQuery(input string) (Query, error) {
@@ -92,84 +280,4 @@ func CovertUserInputToSQLQuery(input string) (Query, error) {
 		return HandleDeleteUserInput(input)
 	}
 	return Query{}, fmt.Errorf("unknown command: %s", command)
-}
-
-// Can only select from one table and one column
-func HandleSelectUserInput(input string) (Query, error) {
-	tokens, err := parser.ParseUserInput(input)
-	if err != nil {
-		return Query{}, err
-	}
-	if len(tokens) != 4 {
-		return Query{}, fmt.Errorf("invalid input: %s", input)
-	}
-	return Query{
-		Command: SQLSelect,
-		Table:   tokens[3],
-		Columns: tokens[1],
-	}, nil
-}
-
-// Handle insert into one column
-func HandleInsertUserInput(input string) (Query, error) {
-	tokens, err := parser.ParseUserInput(input)
-	if err != nil {
-		return Query{}, err
-	}
-	if len(tokens) != 6 {
-		return Query{}, fmt.Errorf("invalid input: %s", tokens)
-	}
-	column, err := GetColumnsForInsert(tokens[3])
-	if err != nil {
-		return Query{}, err
-	}
-	value, err := GetValuesForInsert(tokens[5])
-	if err != nil {
-		return Query{}, err
-	}
-	return Query{
-		Command: SQLInsert,
-		Table:   tokens[2],
-		Columns: column,
-		Values:  value,
-	}, nil
-
-}
-
-// Handle update for one column without spaces in column and value
-func HandleUpdateUserInput(input string) (Query, error) {
-	tokens, err := parser.ParseUserInput(input)
-	if err != nil {
-		return Query{}, err
-	}
-	if len(tokens) != 6 {
-		return Query{}, fmt.Errorf("invalid input: %s", input)
-	}
-	colandval, err := GetColumnsAndValuesForUpdate(tokens[3])
-	if err != nil {
-		return Query{}, err
-	}
-	return Query{
-		Command: SQLUpdate,
-		Table:   tokens[1],
-		Columns: colandval[0],
-		Values:  colandval[1],
-		Filter:  tokens[5],
-	}, nil
-}
-
-// Handle delete for one column without spaces in column and value
-func HandleDeleteUserInput(input string) (Query, error) {
-	tokens, err := parser.ParseUserInput(input)
-	if err != nil {
-		return Query{}, err
-	}
-	if len(tokens) != 5 {
-		return Query{}, fmt.Errorf("invalid input: %s", input)
-	}
-	return Query{
-		Command: SQLDelete,
-		Table:   tokens[2],
-		Filter:  tokens[4],
-	}, nil
 }

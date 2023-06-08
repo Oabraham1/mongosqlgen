@@ -36,5 +36,4 @@ func ConvertSQLQueryToMongoQuery(query sql.Query) (mongo.Query, error) {
 		Filter:      query.Filter,
 		Values:      query.Values,
 	}, nil
-
 }

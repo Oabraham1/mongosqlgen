@@ -1,1 +1,3 @@
-## mongosqlcgen: A tool for Generating Mongo Go code using SQL Queries.
+# MongoSQLGen
+
+Query a MongoDB with SQL queries

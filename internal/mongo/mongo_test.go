@@ -26,8 +26,9 @@ func TestGenerateUpdateQuery(t *testing.T) {
 		Collections: "test",
 		Field:       []string{"name", "age"},
 		Values:      []interface{}{"John", 25},
+		Filter:      "name=John",
 	}
-	expected := "db.test.update({name: \"John\", age: 25})"
+	expected := "db.test.update({name: \"John\"}, {name: \"John\", age: 25})"
 	actual := GenerateMongoQuery(query)
 	require.Equal(t, expected, actual)
 }
@@ -37,10 +38,9 @@ func TestGenerateDeleteQuery(t *testing.T) {
 		Command:     MongoDelete,
 		Database:    "test",
 		Collections: "test",
-		Field:       []string{"name", "age"},
-		Values:      []interface{}{"John", 25},
+		Filter:      "name=John",
 	}
-	expected := "db.test.delete({name: \"John\", age: 25})"
+	expected := "db.test.deleteOne({name: \"John\"})"
 	actual := GenerateMongoQuery(query)
 	require.Equal(t, expected, actual)
 }

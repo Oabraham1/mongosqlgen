@@ -262,7 +262,7 @@ func HandleDeleteUserInput(input string) (Query, error) {
 	return result, nil
 }
 
-func CovertUserInputToSQLQuery(input string) (Query, error) {
+func ConvertUserInputToSQLQuery(input string) (Query, error) {
 	command, err := GetCommandFromUserInput(input)
 	if err != nil {
 		return Query{}, err

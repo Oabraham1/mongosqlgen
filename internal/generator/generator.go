@@ -8,6 +8,7 @@ import (
 	"github.com/oabraham1/mongosqlgen/internal/sql"
 )
 
+// GenerateMongoQueryFromSQLQuery generates a MongoDB query from a SQL query
 func GenerateMongoQueryFromSQLQuery(input string) (string, error) {
 	// Parse the input into a SQL Query
 	sqlQuery, err := sql.ConvertUserInputToSQLQuery(input)

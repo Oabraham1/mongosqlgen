@@ -6,8 +6,10 @@ import (
 	"github.com/oabraham1/mongosqlgen/internal/parser"
 )
 
+// Command is a SQL command
 type Command string
 
+// SQL commands
 const (
 	SQLSelect Command = "SELECT"
 	SQLInsert Command = "INSERT"
@@ -15,6 +17,7 @@ const (
 	SQLDelete Command = "DELETE"
 )
 
+// Query is a SQL query
 type Query struct {
 	Command  Command
 	Database string
@@ -24,6 +27,7 @@ type Query struct {
 	Values   []interface{}
 }
 
+// ParseSQLCommand parses a SQL command
 func ParseSQLCommand(command string) (Command, error) {
 	switch command {
 	case "SELECT":
@@ -39,6 +43,7 @@ func ParseSQLCommand(command string) (Command, error) {
 	}
 }
 
+// GetCommandFromUserInput gets a SQL command from user input
 func GetCommandFromUserInput(input string) (Command, error) {
 	tokens, err := parser.ParseUserInput(input)
 	if err != nil {
@@ -47,6 +52,7 @@ func GetCommandFromUserInput(input string) (Command, error) {
 	return ParseSQLCommand(tokens[0])
 }
 
+// HandleSelectUserInput handles user input for a SELECT command
 func HandleSelectUserInput(input string) (Query, error) {
 	var result Query
 
@@ -99,6 +105,7 @@ func HandleSelectUserInput(input string) (Query, error) {
 	return result, nil
 }
 
+// HandleInsertUserInput handles user input for an INSERT command
 func HandleInsertUserInput(input string) (Query, error) {
 	var result Query
 	result.Command = SQLInsert
@@ -158,6 +165,7 @@ func HandleInsertUserInput(input string) (Query, error) {
 	return result, nil
 }
 
+// HandleUpdateUserInput handles user input for an UPDATE command
 func HandleUpdateUserInput(input string) (Query, error) {
 	var result Query
 	result.Command = SQLUpdate
@@ -216,6 +224,7 @@ func HandleUpdateUserInput(input string) (Query, error) {
 	return result, nil
 }
 
+// HandleDeleteUserInput handles user input for a DELETE command
 func HandleDeleteUserInput(input string) (Query, error) {
 	var result Query
 
@@ -262,6 +271,7 @@ func HandleDeleteUserInput(input string) (Query, error) {
 	return result, nil
 }
 
+// ConvertUserInputToSQLQuery converts user input to a SQL query
 func ConvertUserInputToSQLQuery(input string) (Query, error) {
 	command, err := GetCommandFromUserInput(input)
 	if err != nil {

@@ -1,4 +1,3 @@
-// Converts SQL query to MongoDB query.
 package converter
 
 import (
@@ -8,6 +7,7 @@ import (
 	"github.com/oabraham1/mongosqlgen/internal/sql"
 )
 
+// ConvertSQLCommandToMongoCommand converts a SQL command to a MongoDB command
 func ConvertSQLCommandToMongoCommand(command sql.Command) (mongo.Command, error) {
 	switch command {
 	case sql.SQLSelect:
@@ -23,6 +23,7 @@ func ConvertSQLCommandToMongoCommand(command sql.Command) (mongo.Command, error)
 	}
 }
 
+// ConvertSQLQueryToMongoQuery converts a SQL query to a MongoDB query
 func ConvertSQLQueryToMongoQuery(query sql.Query) (mongo.Query, error) {
 	mongoCommand, err := ConvertSQLCommandToMongoCommand(query.Command)
 	if err != nil {

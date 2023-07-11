@@ -6,8 +6,10 @@ import (
 	"github.com/oabraham1/mongosqlgen/internal/parser"
 )
 
+// Command is a type that represents a MongoDB command
 type Command string
 
+// These are the MongoDB commands that are currently supported
 const (
 	MongoFind   Command = "find"
 	MongoInsert Command = "insert"
@@ -15,6 +17,7 @@ const (
 	MongoDelete Command = "deleteOne"
 )
 
+// Query is a struct that represents a MongoDB query
 type Query struct {
 	Command     Command
 	Database    string
@@ -24,6 +27,7 @@ type Query struct {
 	Values      []interface{}
 }
 
+// GenerateMongoQuery generates a MongoDB query from a Query struct
 func GenerateMongoQuery(query Query) string {
 	switch query.Command {
 	case MongoFind:
@@ -40,26 +44,27 @@ func GenerateMongoQuery(query Query) string {
 
 }
 
+// generateFindQuery generates a MongoDB find query from a Query struct
 func generateFindQuery(query Query) string {
 	fieldsAndValues := ""
 	for i, field := range query.Field {
 		if field == "*" {
 			if query.Filter == "" {
 				return fmt.Sprintf("db.%s.%s({%s})", query.Collections, query.Command, fieldsAndValues)
-			} else {
-				filterArray, err := parser.SplitInputByDelimiters(query.Filter, []string{"=", ">", "<", "!=", ">=", "<="})
-				if err != nil {
-					return ""
+			}
+			filterArray, err := parser.SplitInputByDelimiters(query.Filter, []string{"=", ">", "<", "!=", ">=", "<="})
+			if err != nil {
+				return ""
+			}
+			for i, f := range filterArray {
+				if i%2 == 0 {
+					fieldsAndValues += fmt.Sprintf("%s: \"%s\"", f, filterArray[i+1])
 				}
-				for i, f := range filterArray {
-					if i%2 == 0 {
-						fieldsAndValues += fmt.Sprintf("%s: \"%s\"", f, filterArray[i+1])
-					}
-					if i != len(filterArray)-2 && len(filterArray) > 2 {
-						fieldsAndValues += ", "
-					}
+				if i != len(filterArray)-2 && len(filterArray) > 2 {
+					fieldsAndValues += ", "
 				}
 			}
+
 		} else {
 			if query.Filter == "" && len(query.Field) > 0 {
 				// Add field: 1 to fieldsAndValues
@@ -101,6 +106,7 @@ func generateFindQuery(query Query) string {
 	return fmt.Sprintf("db.%s.%s({%s})", query.Collections, query.Command, fieldsAndValues)
 }
 
+// generateInsertQuery generates a MongoDB insert query from a Query struct
 func generateInsertQuery(query Query) string {
 	var fieldsAndValues string
 	for i, field := range query.Field {
@@ -121,6 +127,7 @@ func generateInsertQuery(query Query) string {
 	return fmt.Sprintf("db.%s.%s({%s})", query.Collections, query.Command, fieldsAndValues)
 }
 
+// generateUpdateQuery generates a MongoDB update query from a Query struct
 func generateUpdateQuery(query Query) string {
 	var fieldsAndValues string
 	// Add filter
@@ -158,6 +165,7 @@ func generateUpdateQuery(query Query) string {
 	return fmt.Sprintf("db.%s.%s({%s})", query.Collections, query.Command, fieldsAndValues)
 }
 
+// generateDeleteQuery generates a MongoDB delete query from a Query struct
 func generateDeleteQuery(query Query) string {
 	var fieldsAndValues string
 	// Add filter

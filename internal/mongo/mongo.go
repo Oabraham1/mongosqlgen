@@ -136,6 +136,7 @@ func generateUpdateQuery(query Query) string {
 		if err != nil {
 			return ""
 		}
+
 		for i, f := range filterArray {
 			if i%2 == 0 {
 				fieldsAndValues += fmt.Sprintf("%s: \"%s\"", f, filterArray[i+1])
@@ -144,7 +145,7 @@ func generateUpdateQuery(query Query) string {
 				fieldsAndValues += ", "
 			}
 		}
-		fieldsAndValues += "}, {"
+		fieldsAndValues += "}, {$set: {"
 	}
 
 	for i, field := range query.Field {
@@ -162,7 +163,7 @@ func generateUpdateQuery(query Query) string {
 			fieldsAndValues += ", "
 		}
 	}
-	return fmt.Sprintf("db.%s.%s({%s})", query.Collections, query.Command, fieldsAndValues)
+	return fmt.Sprintf("db.%s.%s({%s}})", query.Collections, query.Command, fieldsAndValues)
 }
 
 // generateDeleteQuery generates a MongoDB delete query from a Query struct

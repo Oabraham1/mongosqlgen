@@ -28,7 +28,7 @@ func TestGenerateUpdateQuery(t *testing.T) {
 		Values:      []interface{}{"John", 25},
 		Filter:      "name=John",
 	}
-	expected := "db.test.update({name: \"John\"}, {name: \"John\", age: 25})"
+	expected := "db.test.update({name: \"John\"}, {$set: {name: \"John\", age: 25}})"
 	actual := GenerateMongoQuery(query)
 	require.Equal(t, expected, actual)
 }

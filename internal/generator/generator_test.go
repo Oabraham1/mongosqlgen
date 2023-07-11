@@ -34,4 +34,32 @@ func TestGenerateMongoQueryFromSQLQuery(t *testing.T) {
 	got, err = GenerateMongoQueryFromSQLQuery(input)
 	require.NoError(t, err)
 	require.Equal(t, want, got)
+
+	// Test for an INSERT query
+	input = "INSERT INTO users (firstName, lastName) VALUES ('John', 'Doe')"
+	want = `db.users.insert({firstName: "John", lastName: "Doe"})`
+	got, err = GenerateMongoQueryFromSQLQuery(input)
+	require.NoError(t, err)
+	require.Equal(t, want, got)
+
+	// Test for an UPDATE query with single column
+	input = "UPDATE users SET firstName = 'John' WHERE lastName = 'Doe'"
+	want = `db.users.update({lastName: "Doe"}, {$set: {firstName: "John"}})`
+	got, err = GenerateMongoQueryFromSQLQuery(input)
+	require.NoError(t, err)
+	require.Equal(t, want, got)
+
+	// Test for an UPDATE query with multiple columns
+	input = "UPDATE users SET firstName = 'John', lastName = 'Doe' WHERE lastName = 'Doe'"
+	want = `db.users.update({lastName: "Doe"}, {$set: {firstName: "John", lastName: "Doe"}})`
+	got, err = GenerateMongoQueryFromSQLQuery(input)
+	require.NoError(t, err)
+	require.Equal(t, want, got)
+
+	// Test for a DELETE query for specific column
+	input = "DELETE FROM users WHERE firstName = 'John'"
+	want = `db.users.deleteOne({firstName: "John"})`
+	got, err = GenerateMongoQueryFromSQLQuery(input)
+	require.NoError(t, err)
+	require.Equal(t, want, got)
 }
